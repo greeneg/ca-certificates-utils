@@ -1,5 +1,4 @@
-ca-certificates
-===============
+# ca-certificates
 
 Utilities for system wide CA certificate installation
 
@@ -11,8 +10,7 @@ By default p11-kit looks into /usr/share/pki/trust/ resp
 /etc/pki/trust/ but there could be other plugins that serve as
 source for certificates as well.
 
-Supported Certificate Stores
-============================
+## Supported Certificate Stores
 
 update-ca-certificate supports a number of legacy certificate stores
 for applications that don't talk to p11-kit directly yet. It does so
@@ -22,33 +20,31 @@ files.
 
 - /etc/ssl/certs: Hashed directory readable by openSSL. Only for
   legacy applications. Only contains CA certificates for server-auth
-  purpose. Avoid using this in applications.
+  purpose. Avoid using this within applications.
 - /etc/ssl/ca-bundle.pem: Concatenated bundle of CA certificates
   with server-auth purpose. Avoid using this in applications.
 - java-cacerts: Key store fore Java. Only filled with CA
   certificates with purpose server-auth.
 - openssl: hashed directory with CA certificates of all purposes.
   Your system openSSL knows how to read that, don't hardcode the
-  path! Call SSL_CTX_set_default_verify_paths() instead.
+  path! Call `SSL_CTX_set_default_verify_paths()` instead.
 
-Differences to previous versions on openSUSE
-============================================
+## Differences between MidgardOS and openSUSE
 
+- All scripts will aim for shellcheck conformance.
 - Packages are expected to install their CA certificates in
   /usr/share/pki/trust/anchors or /usr/share/pki/trust (no extra subdir) instead
   of /usr/share/ca-certificates/<vendor> now. The anchors subdirectory is for
   regular pem files, the directory one above for pem files in
   openssl's 'trusted' format.
-
 - /etc/ca-certificates.conf is no longer supported. Just symlink the
   certificates you don't want to /etc/pki/trust/blocklist.
 
-Differences to Debian
-=====================
+## Differences to Debian
 
 - /etc/ca-certificates.conf is not supported.
 - Hook scripts don't receive the list of changed certificates on
-  stdin. That allows scripts to have their own method to determine
+  `stdin`. That allows scripts to have their own method to determine
   changes.
 - The command line arguments -v and -f are passed to hook scripts.
 - All stores are created via hook scripts.
