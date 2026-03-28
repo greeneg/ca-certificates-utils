@@ -31,7 +31,8 @@ files.
 
 ## Differences between MidgardOS and openSUSE
 
-- All scripts will aim for shellcheck conformance.
+- Rewritten in Golang for better performance.
+- Hooks are all reworked as plugin executables.
 - Packages are expected to install their CA certificates in
   /usr/share/pki/trust/anchors or /usr/share/pki/trust (no extra subdir) instead
   of /usr/share/ca-certificates/<vendor> now. The anchors subdirectory is for
@@ -43,8 +44,7 @@ files.
 ## Differences to Debian
 
 - /etc/ca-certificates.conf is not supported.
-- Hook scripts don't receive the list of changed certificates on
-  `stdin`. That allows scripts to have their own method to determine
-  changes.
-- The command line arguments -v and -f are passed to hook scripts.
-- All stores are created via hook scripts.
+- Plugins don't receive the list of changed certificates on
+  `stdin`.
+- The command line arguments are passed as JSON data to the plugins.
+- All stores are created via plugins.
