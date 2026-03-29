@@ -9,6 +9,10 @@ type Configuration struct {
 	Verbose bool
 	DestDir string
 	Fresh bool
+	UseSyslog bool
+	LogFile string
+	SyslogFacility string
+	DefaultSyslogLevel string
 }
 
 func NewConfiguration() Configuration {
@@ -20,6 +24,10 @@ func NewConfiguration() Configuration {
 	c.Verbose = false
 	c.DestDir = "/"
 	c.Fresh = false
+	c.LogFile = "/var/log/update-ca.log"
+	c.UseSyslog = true
+	c.SyslogFacility = "DAEMON"
+	c.DefaultSyslogLevel = "INFO"
 
 	return c
 }
