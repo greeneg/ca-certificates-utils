@@ -28,7 +28,12 @@ func main() {
 	p := pluginUtils.NewPluginUtils()
 	// check that stateDir exists
 	stateDir := cfg.DestDir + "/" + cfg.StateDir
-	if !p.FileExists(stateDir) {
+	fileExists, err := p.FileExists(stateDir)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		os.Exit(1)
+	}
+	if !fileExists {
 		fmt.Println("ERROR: State directory does not exist: " + stateDir)
 		os.Exit(1)
 	}
@@ -39,7 +44,12 @@ func main() {
 		fmt.Println("Creating " + caDir)
 	}
 	// create caDir and all its parents if it does not exist
-	if !p.FileExists(caDir) {
+	fileExists, err = p.FileExists(caDir)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		os.Exit(1)
+	}
+	if !fileExists {
 		err := os.MkdirAll(caDir, 0755)
 		if err != nil {
 			fmt.Println("ERROR: Cannot create directory: " + string(err.Error()))

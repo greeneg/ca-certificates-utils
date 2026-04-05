@@ -28,7 +28,12 @@ func main() {
 	p := pluginUtils.NewPluginUtils()
 	// check that stateDir exists
 	stateDir := cfg.DestDir + "/" + cfg.StateDir
-	if !p.FileExists(stateDir) {
+	fileExists, err := p.FileExists(stateDir)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		os.Exit(1)
+	}
+	if !fileExists {
 		fmt.Println("ERROR: State directory does not exist: " + stateDir)
 		os.Exit(1)
 	}
@@ -37,7 +42,12 @@ func main() {
 	pemDir := cfg.DestDir + "/" + cfg.StateDir + "/pem"
 
 	// ensure that the pemDir exists
-	if !p.FileExists(pemDir) {
+	fileExists, err = p.FileExists(pemDir)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		os.Exit(1)
+	}
+	if !fileExists {
 		err := os.Mkdir(pemDir, 0755)
 		if err != nil {
 			fmt.Println("ERROR: Cannot create directory: " + string(err.Error()))

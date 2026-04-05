@@ -7,7 +7,7 @@ TARGET=etcssl.plugin
 
 all: $(TARGET)
 
-$(TARGET): all
+$(TARGET): *.go
 	pwd && \
 	go mod tidy && \
 	go build -v -o $@ ./
