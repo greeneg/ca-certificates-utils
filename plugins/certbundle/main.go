@@ -30,11 +30,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	caFile := cfg.DestDir + "/" + cfg.StateDir + "/ca-bundle.pem"
-	caDir := cfg.DestDir + "/" + cfg.StateDir + "/pem"
+	// ensure that destDir ends with a slash
+	p := pluginUtils.NewPluginUtils()
+	cfg.DestDir = p.EnsureVarEndsWithSlash(cfg.DestDir)
+	caFile := cfg.DestDir + cfg.StateDir + "/ca-bundle.pem"
+	caDir := cfg.DestDir + cfg.StateDir + "/pem"
 
 	// first get the stat info for the above
-	p := pluginUtils.NewPluginUtils()
 	fileTimeStamp = p.StatInfo(caFile, cfg)
 	dirTimeStamp = p.StatInfo(caDir, cfg)
 

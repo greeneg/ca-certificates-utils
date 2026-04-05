@@ -27,7 +27,8 @@ func main() {
 
 	p := pluginUtils.NewPluginUtils()
 	// check that stateDir exists
-	stateDir := cfg.DestDir + "/" + cfg.StateDir
+	cfg.DestDir = p.EnsureVarEndsWithSlash(cfg.DestDir)
+	stateDir := cfg.DestDir + cfg.StateDir
 	fileExists, err := p.FileExists(stateDir)
 	if err != nil {
 		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	etcCertsDir := cfg.DestDir + "etc/ssl/certs"
-	pemDir := cfg.DestDir + "/" + cfg.StateDir + "/pem"
+	pemDir := cfg.DestDir + cfg.StateDir + "/pem"
 
 	// ensure that the pemDir exists
 	fileExists, err = p.FileExists(pemDir)

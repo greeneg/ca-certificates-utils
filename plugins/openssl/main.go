@@ -27,7 +27,8 @@ func main() {
 
 	p := pluginUtils.NewPluginUtils()
 	// check that stateDir exists
-	stateDir := cfg.DestDir + "/" + cfg.StateDir
+	cfg.DestDir = p.EnsureVarEndsWithSlash(cfg.DestDir)
+	stateDir := cfg.DestDir + cfg.StateDir
 	fileExists, err := p.FileExists(stateDir)
 	if err != nil {
 		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
@@ -38,7 +39,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	caDir := cfg.DestDir + "/" + cfg.StateDir + "/openssl"
+	caDir := cfg.DestDir + cfg.StateDir + "/openssl"
 
 	if cfg.Verbose {
 		fmt.Println("Creating " + caDir)

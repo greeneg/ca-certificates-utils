@@ -219,3 +219,10 @@ func (p PluginUtils) RunPlugins(plugins []string, c configuration.Configuration)
 	}
 	return nil
 }
+
+func (p PluginUtils) EnsureVarEndsWithSlash(v string) string {
+	if len(v) > 0 && v[len(v)-1] != '/' {
+		return v + "/"
+	}
+	return v
+}

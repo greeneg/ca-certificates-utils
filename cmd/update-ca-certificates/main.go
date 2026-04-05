@@ -67,6 +67,8 @@ func ProcessArgs(args []string, c configuration.Configuration, p *pluginUtils.Pl
 				fmt.Println(fmt.Errorf("ERROR: %w", err))
 				os.Exit(1)
 			}
+			// ensure that the directory ends with a slash
+			_tDir = p.EnsureVarEndsWithSlash(_tDir)
 			if dirExistence {
 				c.DestDir = _tDir
 				hasRootDir = true
