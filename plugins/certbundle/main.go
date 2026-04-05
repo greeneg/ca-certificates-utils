@@ -77,6 +77,15 @@ func main() {
 		os.Exit(1)
 	}
 	if fileExists && !p.IsSymLink(etcCaPemFile) {
+		err := os.Remove(etcCaPemFile)
+		if err != nil {
+			fmt.Println("ERROR: Cannot remove existing /etc/ssl/ca-bundle.pem: " + string(err.Error()))
+			os.Exit(1)
+		}
 		err = p.ConfigureEtcSslCaBundlePem(etcCaPemFile)
+		if err != nil {
+			fmt.Println("ERROR: Cannot configure /etc/ssl/ca-bundle.pem: " + string(err.Error()))
+			os.Exit(1)
+		}
 	}
 }
