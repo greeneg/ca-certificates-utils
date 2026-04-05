@@ -62,7 +62,11 @@ func ProcessArgs(args []string, c configuration.Configuration, p *pluginUtils.Pl
 				os.Exit(1)
 			}
 			// now test if the directory exists
-			dirExistence := p.FileExists(c.DestDir)
+			dirExistence, err := p.FileExists(c.DestDir)
+			if err != nil {
+				fmt.Println(fmt.Errorf("ERROR: %w", err))
+				os.Exit(1)
+			}
 			if dirExistence {
 				c.DestDir = _tDir
 				hasRootDir = true
@@ -158,7 +162,14 @@ func main() {
 		}
 	}
 	// check if our update lock file exists
-	fileExists := p.FileExists("/etc/pki/trust/.updated")
+	fileExists, err := p.FileExists("/etc/pki/trust/.updated")
+	if err != nil {
+		fmt.Println(fmt.Errorf("ERROR: %w", err))
+		if c.UseSyslog {
+			sysLog.Err("E: " + string(err.Error()))
+		}
+		os.Exit(1)
+	}
 	if fileExists {
 		err = os.Remove("/etc/pki/trust/.updated")
 		if err != nil {

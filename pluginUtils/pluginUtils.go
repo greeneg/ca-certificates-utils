@@ -98,13 +98,19 @@ func (p PluginUtils) IsSymLink(f string) bool {
 func (p PluginUtils) ConfigureEtcSslCaBundlePem(f string) error {
 	baseDir := path.Base(f)
 
-	if !p.FileExists(baseDir) {
+	e, err := p.FileExists(f)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		return err
+	}
+
+	if !e {
 		err := os.Mkdir(baseDir, 0755)
 		if err != nil {
 			return err
 		}
 	}
-	err := os.Symlink("../../var/lib/ca-certificates/ca-bundle.pem", f)
+	err = os.Symlink("../../var/lib/ca-certificates/ca-bundle.pem", f)
 	if err != nil {
 		return err
 	}

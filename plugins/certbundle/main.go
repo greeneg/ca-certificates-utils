@@ -58,7 +58,12 @@ func main() {
 		os.Exit(1)
 	}
 	etcCaPemFile := cfg.DestDir + "etc/ssl/ca-bundle.pem"
-	if p.FileExists(etcCaPemFile) && !p.IsSymLink(etcCaPemFile) {
+	fileExists, err := p.FileExists(etcCaPemFile)
+	if err != nil {
+		fmt.Println("ERROR: Cannot check if file exists: " + string(err.Error()))
+		os.Exit(1)
+	}
+	if fileExists && !p.IsSymLink(etcCaPemFile) {
 		err = p.ConfigureEtcSslCaBundlePem(etcCaPemFile)
 	}
 }
