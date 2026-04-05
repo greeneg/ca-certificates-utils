@@ -183,6 +183,7 @@ func (p PluginUtils) FindPlugins(c configuration.Configuration, s *syslog.Writer
 				s.Err("E: " + string(err.Error()))
 				os.Exit(1)
 			}
+			continue
 		}
 		fmt.Printf("Checking location %s for plugins\n", dir)
 		if c.UseSyslog {
