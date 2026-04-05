@@ -38,8 +38,12 @@ func (p PluginUtils) RunTrust(f, t string) (int, error) {
 	cmd := exec.Command("/usr/bin/trust", "extract", "--format="+format, "--purpose=server-auth", "--filter=ca-anchors", "--overwrite", target)
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("ERROR: Could not run command '%s': "+string(err.Error()), cmd.Args)
-		return cmd.ProcessState.ExitCode(), err
+		exitCode := -1
+		if cmd.ProcessState != nil {
+			exitCode = cmd.ProcessState.ExitCode()
+		}
+		fmt.Printf("ERROR: Could not run command %q: %v", cmd.Args, err)
+		return exitCode, err
 	}
 
 	return 0, nil
