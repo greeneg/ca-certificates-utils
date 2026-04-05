@@ -3,8 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/greeneg/ca-certificates/configuration"
 	"github.com/greeneg/ca-certificates/pluginUtils"
@@ -13,10 +15,18 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadString('\n')
-	if err != nil {
+	// ReadString returns data even with io.EOF if stdin doesn't end with newline
+	// Only fail if we have no data at all
+	if err != nil && err != io.EOF {
 		fmt.Println("ERROR: Cannot read string: " + string(err.Error()))
 		os.Exit(1)
 	}
+	if line == "" && err != nil {
+		fmt.Println("ERROR: No input received from stdin")
+		os.Exit(1)
+	}
+	// Trim any trailing newline for consistent processing
+	line = strings.TrimRight(line, "\n")
 
 	// process line as JSON
 	cfg := configuration.NewConfiguration()
