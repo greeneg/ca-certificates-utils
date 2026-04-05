@@ -53,23 +53,20 @@ func main() {
 
 	fmt.Println("Creating " + etcCertsDir)
 	// check that /etc/ssl/certs exists and is a symlink to the pemDir
-	if !p.IsSymLink(etcCertsDir) {
-		// check if that symline points to the pemDir
-		if !p.CheckSymlinkTarget(etcCertsDir, pemDir) {
-			// if not, remove the file and create the symlink
-			if cfg.Verbose {
-				fmt.Println("NOTICE: Restoring symlink for " + etcCertsDir)
-			}
-			err := os.Remove(etcCertsDir)
-			if err != nil {
-				fmt.Println("ERROR: Cannot remove existing /etc/ssl/certs: " + string(err.Error()))
-				os.Exit(1)
-			}
-			err = os.Symlink(pemDir, etcCertsDir)
-			if err != nil {
-				fmt.Println("ERROR: Cannot create symlink: " + string(err.Error()))
-				os.Exit(1)
-			}
+	if !p.IsSymLink(etcCertsDir) || !p.CheckSymlinkTarget(etcCertsDir, pemDir) {
+		// if not, remove the file and create the symlink
+		if cfg.Verbose {
+			fmt.Println("NOTICE: Restoring symlink for " + etcCertsDir)
+		}
+		err := os.Remove(etcCertsDir)
+		if err != nil {
+			fmt.Println("ERROR: Cannot remove existing /etc/ssl/certs: " + string(err.Error()))
+			os.Exit(1)
+		}
+		err = os.Symlink(pemDir, etcCertsDir)
+		if err != nil {
+			fmt.Println("ERROR: Cannot create symlink: " + string(err.Error()))
+			os.Exit(1)
 		}
 	}
 }
