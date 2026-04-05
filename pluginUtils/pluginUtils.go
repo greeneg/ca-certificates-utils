@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/greeneg/ca-certificates/configuration"
@@ -213,9 +214,33 @@ func (p PluginUtils) FindPlugins(c configuration.Configuration, s *syslog.Writer
 	return plugins, nil
 }
 
-func (p PluginUtils) RunPlugins(plugins []string, c configuration.Configuration) error {
+func (p PluginUtils) RunPlugins(plugins []string, c configuration.Configuration, s *syslog.Writer) error {
 	for _, plugin := range plugins {
 		fmt.Printf("plugin: %s", plugin)
+		// convert c to json and pass it to the plugin via stdin
+		jsonStr, err := c.ToJson(c)
+		if err != nil {
+			fmt.Println(fmt.Errorf("ERROR: %w", err))
+			if c.UseSyslog {
+				s.Err("E: " + string(err.Error()))
+			}
+			continue
+		}
+		cmd := exec.Command(plugin)
+		cmd.Stdin = strings.NewReader(jsonStr)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			exitCode := 1
+			if cmd.ProcessState != nil {
+				exitCode = cmd.ProcessState.ExitCode()
+			}
+			fmt.Printf("ERROR: Could not run plugin %s: %v. Output: %s. Exit code: %d\n", plugin, err, string(output), exitCode)
+			if c.UseSyslog {
+				s.Err("E: Could not run plugin " + plugin + ": " + string(err.Error()) + ". Output: " + string(output) + ". Exit code: " + fmt.Sprintf("%d", exitCode))
+			}
+			continue
+		}
+		fmt.Printf("Output from plugin %s: %s", plugin, string(output))
 	}
 	return nil
 }

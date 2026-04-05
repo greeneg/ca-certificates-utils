@@ -194,7 +194,7 @@ func main() {
 	}
 
 	// now execute the plugins
-	err = p.RunPlugins(plugins, c)
+	err = p.RunPlugins(plugins, c, sysLog)
 	if err != nil {
 		fmt.Println(fmt.Errorf("ERROR: %w", err))
 		if c.UseSyslog {
