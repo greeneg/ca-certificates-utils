@@ -31,6 +31,8 @@ func (p PluginUtils) RunTrust(f, t string) (int, error) {
 	case "openssl":
 		format = "openssl-directory"
 		target = f
+	default:
+		return 1, fmt.Errorf("unsupported trust extraction type: %s", t)
 	}
 
 	cmd := exec.Command("/usr/bin/trust", "extract", "--format="+format, "--purpose=server-auth", "--filter=ca-anchors", "--overwrite", target)
