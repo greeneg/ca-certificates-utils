@@ -37,7 +37,7 @@ func (p PluginUtils) RunTrust(f, t string) (int, error) {
 	cmd := exec.Command("/usr/bin/trust", "extract", "--format="+format, "--purpose=server-auth", "--filter=ca-anchors", "--overwrite", target)
 	err := cmd.Run()
 	if err != nil {
-		exitCode := -1
+		exitCode := 1
 		if cmd.ProcessState != nil {
 			exitCode = cmd.ProcessState.ExitCode()
 		}
