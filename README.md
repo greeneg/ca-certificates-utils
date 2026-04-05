@@ -15,29 +15,88 @@ The update-ca-certificates command supports a number of legacy certificate store
 
 ## Plugins
 
-This version of the update-ca-certificates command uses plugins instead of shell "hooks". These plugins take JSON data in via `stdin` for configuration information. The JSON structure is shown below as an example:
+This version of the update-ca-certificates command uses a plugin-based architecture instead of shell "hooks". Plugins are standalone executables with a `.plugin` extension that receive configuration data via `stdin` as JSON.
+
+### Plugin Locations
+
+Plugins are discovered in the following directories:
+
+- `/usr/lib/ca-certificates/update.d/*.plugin` - System-provided plugins
+- `/etc/ca-certificates/update.d/*.plugin` - Administrator-provided override plugins
+
+### Plugin Architecture
+
+Each plugin:
+
+1. **Receives configuration via stdin** as a JSON-encoded Configuration object
+2. **Processes certificates** based on the configuration settings
+3. **Logs to syslog** using the DAEMON facility
+4. **Uses shared modules**:
+   - `github.com/greeneg/ca-certificates/configuration` - Configuration data structures
+   - `github.com/greeneg/ca-certificates/pluginUtils` - Common plugin utilities
+
+### Configuration JSON Structure
+
+The JSON structure passed to plugins contains the following fields:
 
 ```json
 {
-  "verbose": true,
-  "fresh": false,
-  "root": "/",
-  "statedir": "var/lib/ca-certificates"
+  "stateDir": "var/lib/ca-certificates",
+  "pluginDirectories": [
+    "etc/ca-certificates/update.d",
+    "usr/lib/ca-certificates/update.d"
+  ],
+  "verbose": false,
+  "rootDir": "/",
+  "clean": false,
+  "useSyslog": true,
+  "logFile": "/var/log/update-ca.log",
+  "syslogFacility": "DAEMON",
+  "defaultSyslogLevel": "INFO"
 }
 ```
 
-All plugins send their output to log files in `/var/log/update-ca-certificates` and to the host's syslog facility.
+### Available Plugins
+
+The following plugins are included:
+
+- **certbundle** - Generates PEM bundle files for applications
+- **etcssl** - Manages /etc/ssl symlinks for legacy OpenSSL applications
+- **java** - Manages Java cacerts keystore
+- **openssl** - Manages OpenSSL hashed certificate directories
+
+### Writing Custom Plugins
+
+To create a custom plugin:
+
+1. Create an executable that reads JSON from stdin (handle both newline-terminated and non-terminated input)
+2. Parse the JSON into a Configuration struct
+3. Use the pluginUtils module for common operations (file checking, trust extraction, etc.)
+4. Name your plugin with a `.plugin` extension
+5. Place it in `/etc/ca-certificates/update.d/` for local customization
+
+### Transactional Update Support
+
+When the `TRANSACTIONAL_UPDATE` environment variable is set to "true", "yes", or "1", the update-ca-certificates tool will skip plugin execution and create a lock file (`/etc/pki/trust/.updated`). This prevents conflicts during package management operations.
 
 ## Differences between MidgardOS and openSUSE
 
-- Rewritten in Golang for better performance.
-- Hooks are all reworked as plugin executables that use JSON to pass configuration data.
+- Rewritten in Golang for better performance and maintainability.
+- Uses a modular plugin architecture with shared Go modules (`configuration` and `pluginUtils`).
+- Plugins are standalone executables (`.plugin` files) that receive JSON configuration via stdin.
+- Plugins use syslog for logging by default (DAEMON facility).
+- Command requires root privileges to execute (checks at startup).
+- Supports transactional updates via the `TRANSACTIONAL_UPDATE` environment variable.
 - Packages are expected to install their CA certificates in `/usr/share/pki/trust/anchors` or `/usr/share/pki/trust` (no extra subdir) instead of the deprecated `/usr/share/ca-certificates/<vendor>` now. The anchors subdirectory is for regular pem files, the directory one above for pem files in openssl's 'trusted' format.
-- The older configuration file from Debian, `/etc/ca-certificates.conf` is no longer supported. To block the use of certificates you don't want to use, create a filesystem symbplic link to the certificates you don't want in `/etc/pki/trust/blocklist`.
+- The older configuration file from Debian, `/etc/ca-certificates.conf` is no longer supported. To block the use of certificates you don't want to use, create a filesystem symbolic link to the certificates you don't want in `/etc/pki/trust/blocklist`.
 
 ## Differences to Debian
 
 - The `/etc/ca-certificates.conf` configuration file is not supported.
-- Plugins don't receive the list of changed certificates on `stdin`, as it is now used to pass configuration data to the plugin.
-- The command line arguments are passed as JSON data to the plugin at execution time.
-- All stores are created via plugins.
+- Plugins are standalone Go executables (`.plugin` files) rather than shell scripts.
+- Plugins receive full configuration data as JSON via stdin, not a list of changed certificates.
+- All command line options are encoded in the JSON configuration passed to plugins.
+- All certificate stores are created via the plugin system.
+- Plugins use shared Go modules for common functionality.
+- Root privileges are required to run the update-ca-certificates command.
+- Syslog integration is built-in and enabled by default.
