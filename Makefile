@@ -23,6 +23,8 @@ install:
 	$(MAKE) -C plugins/etcssl install DESTDIR=$(DESTDIR)
 	install -Dm644 COPYING -t $(DESTDIR)$(docdir)
 	install -Dm644 README.md -t $(DESTDIR)$(docdir)
+	install -d $(DESTDIR)$(mandir)/man8
+	install -m644 doc/update-ca-certificates.8 -t $(DESTDIR)$(mandir)/man8
 	install -Dm644 cmd/update-ca-certificates/ca-certificates.service -t $(DESTDIR)$(systemdsystemunitdir)
 	install -Dm644 cmd/update-ca-certificates/ca-certificates-setup.service -t $(DESTDIR)$(systemdsystemunitdir)
 	install -Dm644 cmd/update-ca-certificates/ca-certificates.path -t $(DESTDIR)$(systemdsystemunitdir)
