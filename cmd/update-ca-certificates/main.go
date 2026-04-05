@@ -143,6 +143,9 @@ func findPlugins(c Configuration, s *syslog.Writer) ([]string, error) {
 }
 
 func runPlugins(p []string, c Configuration) error {
+	for _, plugin := range(p) {
+		fmt.Printf("plugin: %s", plugin)
+	}
 	return nil
 }
 
@@ -153,18 +156,18 @@ func isRoot() bool {
 func main() {
 	c := NewConfiguration()
 
-	// check that we're running as root
-	if !isRoot() {
-		fmt.Println(fmt.Errorf("ERROR: %s", "Application not running as root. Exiting"))
-		os.Exit(2)
-	}
-
 	// lets deal with our flags
 	c, err := ProcessArgs(os.Args, c)
 	if err != nil {
 		e := fmt.Errorf("ERROR: %w", err)
 		fmt.Println(e)
 		os.Exit(1)
+	}
+
+	// check that we're running as root
+	if !isRoot() {
+		fmt.Println(fmt.Errorf("ERROR: %s", "Application not running as root. Exiting"))
+		os.Exit(2)
 	}
 
 	// if we want to use syslog, create our logger

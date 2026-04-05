@@ -1,12 +1,9 @@
-package main
+package configuration
 
 import (
 	"encoding/json"
 	"fmt"
 )
-
-const appName string = "update-ca-certificates"
-const appVersion string = "0.1"
 
 type Configuration struct {
 	StateDir           string   `json:"stateDir"`

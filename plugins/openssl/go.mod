@@ -1,4 +1,4 @@
-module github.com/greeneg/ca-certificates/plugins/certbundle
+module github.com/greeneg/ca-certificates/plugins/openssl
 
 go 1.26.1
 

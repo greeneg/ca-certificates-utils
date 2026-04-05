@@ -3,7 +3,7 @@ prefix=/usr
 libdir=$(prefix)/lib
 plugindir=$(libdir)/ca-certificates/update.d
 
-TARGET=certbundle.plugin
+TARGET=etcssl.plugin
 
 all: $(TARGET)
 

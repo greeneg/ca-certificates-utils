@@ -1,9 +1,8 @@
 DESTDIR=
 prefix=/usr
-libdir=$(prefix)/lib
-plugindir=$(libdir)/ca-certificates/update.d
+sbindir=$(prefix)/sbin
 
-TARGET=certbundle.plugin
+TARGET=update-ca-certificates
 
 all: $(TARGET)
 
@@ -13,7 +12,7 @@ $(TARGET): all
 	go build -v -o $@ ./
 
 install: $(TARGET)
-	install -Dm755 $(TARGET) -t $(DESTDIR)$(plugindir)
+	install -Dm755 $(TARGET) -t $(DESTDIR)$(sbindir)
 
 clean:
 	rm -f $(TARGET)

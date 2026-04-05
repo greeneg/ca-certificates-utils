@@ -1,14 +1,12 @@
-package main
+package certbundle
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
-	"os/exec"
-	"path"
 	"time"
 
+	"github.com/greeneg/ca-certificates/configuration"
 	"github.com/greeneg/ca-certificates/pluginUtils"
 )
 
@@ -25,35 +23,42 @@ func main() {
 	var dirTimeStamp time.Time
 
 	// process line as JSON
-	cfg := pluginUtils.NewConfiguration()
+	cfg := configuration.NewConfiguration()
 	cfg, err = cfg.FromJson(line)
+	if err != nil {
+		fmt.Println("ERROR: Cannot process JSON string: " + string(err.Error()))
+		os.Exit(1)
+	}
 
 	caFile := cfg.DestDir + "/" + cfg.StateDir + "/ca-bundle.pem"
-	caDir  := cfg.DestDir + "/" + cfg.StateDir + "/pem"
+	caDir := cfg.DestDir + "/" + cfg.StateDir + "/pem"
 
 	// first get the stat info for the above
-	fileTimeStamp = pluginUtils.statInfo(caFile, cfg)
-	dirTimeStamp = pluginUtils.statInfo(caDir, cfg)
+	p := pluginUtils.NewPluginUtils()
+	fileTimeStamp = p.StatInfo(caFile, cfg)
+	dirTimeStamp = p.StatInfo(caDir, cfg)
 
 	if !cfg.Fresh && fileTimeStamp.After(dirTimeStamp) {
 		os.Exit(0)
 	}
 
 	// now execute trust to get the pem file generated
-	code, err := runTrust(caFile)
+	code, err := p.RunTrust(caFile, "bundle")
 	if err != nil {
 		fmt.Println("ERROR: Could not run command: " + string(err.Error()))
 		os.Exit(code)
 	}
 
-	if cfg.Verbose { fmt.Println("Creating " + caFile) }
-	err = generatePemFile(caFile)
+	if cfg.Verbose {
+		fmt.Println("Creating " + caFile)
+	}
+	err = p.GeneratePemFile(caFile)
 	if err != nil {
 		fmt.Println("ERROR: Cannot generate pem file: " + string(err.Error()))
 		os.Exit(1)
 	}
 	etcCaPemFile := cfg.DestDir + "etc/ssl/ca-bundle.pem"
-	if fileExists(etcCaPemFile) && !isSymLink(etcCaPemFile) {
-		err = configureEtcSslCaBundlePem(etcCaPemFile)
+	if p.FileExists(etcCaPemFile) && !p.IsSymLink(etcCaPemFile) {
+		err = p.ConfigureEtcSslCaBundlePem(etcCaPemFile)
 	}
 }
