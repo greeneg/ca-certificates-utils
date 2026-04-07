@@ -1,4 +1,4 @@
-# ca-certificates - Utilities for system wide CA certificate installation
+# ca-certificates - Utilities to Manage the System CA Certificates
 
 The update-ca-certificates command and its plugins are intended to keep the certificate stores of various components in sync with the system CA certificates.
 
@@ -6,7 +6,7 @@ The canonical source of CA certificates is normally managed by `p11-kit`. By def
 
 ## Supported Certificate Stores
 
-The update-ca-certificates command supports a number of legacy certificate stores for applications that don't integrate with `p11-kit` directly yet. It does so by generating the certificate stores in /var/lib/ca-certificates and generating filesystem symbolic links in the locations where applications expect those files to exist.
+The update-ca-certificates command supports a number of legacy certificate stores for applications that don't integrate with `p11-kit` directly yet. It does so by generating the certificate stores in `/var/lib/ca-certificates` and generating filesystem symbolic links in the locations where applications expect those files to exist.
 
 - `/etc/ssl/certs`: Hashed directory readable by OpenSSL. Only for legacy applications. Only contains CA certificates for server identification purposes. Avoid using this within new applications.
 - `/etc/ssl/ca-bundle.pem`: Concatenated bundle of CA certificates for server identification purposes. Avoid using this in new applications.
@@ -25,6 +25,7 @@ Plugins are discovered from the following directories, in this order:
 - `/usr/lib/ca-certificates/update.d/*.plugin` - System-provided plugins
 
 Plugins from both directories are discovered; this does not imply basename-based override precedence.
+
 ### Plugin Architecture
 
 Each plugin:
@@ -33,8 +34,9 @@ Each plugin:
 2. **Processes certificates** based on the configuration settings
 3. **Logs to syslog** using the DAEMON facility
 4. **Uses shared modules**:
-   - `github.com/greeneg/ca-certificates/configuration` - Configuration data structures
-   - `github.com/greeneg/ca-certificates/pluginUtils` - Common plugin utilities
+   - `github.com/greeneg/ca-certificates-utils/configuration` - Configuration data structures
+   - `github.com/greeneg/ca-certificates-utils/logger` - Syslog integration
+   - `github.com/greeneg/ca-certificates-utils/pluginUtils` - Common plugin utilities
 
 ### Configuration JSON Structure
 
@@ -71,10 +73,10 @@ The following plugins are included:
 To create a custom plugin:
 
 1. Create an executable that reads JSON from stdin (handle both newline-terminated and non-terminated input)
-2. Parse the JSON into a Configuration struct
-3. Use the pluginUtils module for common operations (file checking, trust extraction, etc.)
-4. Name your plugin with a `.plugin` extension
-5. Place it in `/etc/ca-certificates/update.d/` for local customization
+1. Parse the JSON into a Configuration struct
+1. Use the pluginUtils module for common operations (file checking, trust extraction, etc.)
+1. Name your plugin with a `.plugin` extension
+1. Place it in `/etc/ca-certificates/update.d/` for local customization
 
 ### Transactional Update Support
 

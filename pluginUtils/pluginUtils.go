@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/greeneg/ca-certificates/configuration"
-	"github.com/greeneg/ca-certificates/logger"
+	"github.com/greeneg/ca-certificates-utils/configuration"
+	"github.com/greeneg/ca-certificates-utils/logger"
 
 	"github.com/MakeNowJust/heredoc"
 )

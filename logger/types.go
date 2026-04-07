@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/syslog"
 
-	"github.com/greeneg/ca-certificates/configuration"
+	"github.com/greeneg/ca-certificates-utils/configuration"
 )
 
 type Logger struct {
