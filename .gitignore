@@ -2,11 +2,8 @@
 
 # don't track our binary artifacts
 cmd/update-ca-certificates/update-ca-certificates
-plugins/certbundle/certbundle
 plugins/certbundle/certbundle.plugin
-plugins/etcssl/etcssl
 plugins/etcssl/etcssl.plugin
-plugins/java/java
 plugins/java/java.plugin
-plugins/openssl/openssl
 plugins/openssl/openssl.plugin
+plugins/nssdb/nssdb.plugin
