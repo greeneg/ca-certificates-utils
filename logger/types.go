@@ -20,14 +20,15 @@ type Logger struct {
 type LogLevel int
 
 const (
-	INFO LogLevel = iota
+	DEBUG LogLevel = iota
+	INFO
 	NOTICE
 	WARNING
 	ERROR
 )
 
 func (l LogLevel) String() string {
-	return [...]string{"INFO", "NOTICE", "WARNING", "ERROR"}[l]
+	return [...]string{"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR"}[l]
 }
 
 func NewLogger(cfg configuration.Configuration, appName string) Logger {
@@ -44,6 +45,8 @@ func NewLogger(cfg configuration.Configuration, appName string) Logger {
 		var facility syslog.Priority
 		var loglevel syslog.Priority
 		switch l.DefaultSyslogLevel {
+		case "DEBUG":
+			loglevel = syslog.LOG_DEBUG
 		case "INFO":
 			loglevel = syslog.LOG_INFO
 		case "NOTICE":
@@ -83,6 +86,8 @@ func NewLogger(cfg configuration.Configuration, appName string) Logger {
 
 func (l Logger) GetDefaultLogLevel() LogLevel {
 	switch l.DefaultSyslogLevel {
+	case "DEBUG":
+		return DEBUG
 	case "INFO":
 		return INFO
 	case "NOTICE":
@@ -108,6 +113,8 @@ func (l Logger) GetSyslogFacility() string {
 func (l Logger) Log(level LogLevel, message string) {
 	if l.UseSyslog && l.SyslogWriter != nil {
 		switch level {
+		case DEBUG:
+			l.SyslogWriter.Debug("D: " + message)
 		case INFO:
 			l.SyslogWriter.Info("I: " + message)
 		case NOTICE:
@@ -123,6 +130,10 @@ func (l Logger) Log(level LogLevel, message string) {
 	if l.UseConsoleLog {
 		fmt.Printf("%s: %s\n", level.String(), message)
 	}
+}
+
+func (l Logger) LvlDebug() LogLevel {
+	return DEBUG
 }
 
 func (l Logger) LvlInfo() LogLevel {
