@@ -1,4 +1,4 @@
-module github.com/greeneg/ca-certificates-utils/plugins/certbundle
+module github.com/greeneg/ca-certificates-utils/plugins/nssdb
 
 go 1.26.1
 
