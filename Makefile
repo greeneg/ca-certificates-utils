@@ -9,11 +9,12 @@ mandir=$(datadir)/man
 systemdsystemunitdir=$(prefix)/lib/systemd/system
 
 all:
-	$(MAKE) -C cmd/update-ca-certificates all
-	$(MAKE) -C plugins/certbundle all
-	$(MAKE) -C plugins/java all
-	$(MAKE) -C plugins/openssl all
-	$(MAKE) -C plugins/etcssl all
+	$(MAKE) -C cmd/update-ca-certificates
+	$(MAKE) -C plugins/certbundle
+	$(MAKE) -C plugins/java
+	$(MAKE) -C plugins/openssl
+	$(MAKE) -C plugins/etcssl
+	$(MAKE) -C plugins/nssdb
 
 install:
 	$(MAKE) -C cmd/update-ca-certificates install DESTDIR=$(DESTDIR)
@@ -21,6 +22,7 @@ install:
 	$(MAKE) -C plugins/java install DESTDIR=$(DESTDIR)
 	$(MAKE) -C plugins/openssl install DESTDIR=$(DESTDIR)
 	$(MAKE) -C plugins/etcssl install DESTDIR=$(DESTDIR)
+	$(MAKE) -C plugins/nssdb install DESTDIR=$(DESTDIR)
 	install -Dm644 COPYING -t $(DESTDIR)$(docdir)
 	install -Dm644 README.md -t $(DESTDIR)$(docdir)
 	install -d $(DESTDIR)$(mandir)/man8
@@ -35,6 +37,7 @@ tidy:
 	$(MAKE) -C plugins/java tidy
 	$(MAKE) -C plugins/openssl tidy
 	$(MAKE) -C plugins/etcssl tidy
+	$(MAKE) -C plugins/nssdb tidy
 
 clean:
 	$(MAKE) -C cmd/update-ca-certificates clean
@@ -42,5 +45,6 @@ clean:
 	$(MAKE) -C plugins/java clean
 	$(MAKE) -C plugins/openssl clean
 	$(MAKE) -C plugins/etcssl clean
+	$(MAKE) -C plugins/nssdb clean
 
 .PHONY: all install clean tidy
